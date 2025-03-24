@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Random User API</title>
+	<style>
+		* {
+			margin: 0px;
+			padding: 0px;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: Arial, Helvetica, sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+			background: linear-gradient(180deg, #F0F8FF, #FFF8DC);
+			overflow: hidden;
+
+		}
+
+		body::selection {
+			background-color: #ff6347;
+			color: #fff;
+		}
+
+		.container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+
+		button {
+			background-color: red;
+			border: none;
+			border-radius: 50px;
+			padding: 8px 12px;
+			margin: 20px 0;
+			font-size: 18px;
+			font-weight: bold;
+			color: #fff;
+			cursor: pointer;
+		}
+
+		button:hover {
+			background-color: darkred;
+		}
+
+		.card {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			border-radius: 8px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			padding: 16px;
+			margin-top: 16px;
+			background-color: #fff;
+
+			.item {
+				border-radius: 8px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+				padding: 16px;
+				margin: 8px;
+				text-align: center;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.item:hover {
+				background-color: #f3f3f3;
+				cursor: auto;
+			}
+
+			.item img {
+				width: 100px;
+				height: 100px;
+				border-radius: 50px;
+				margin: 10px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>Random User API</h1>
+		<button id="btnRefresh">Refresh</button>
+		<div id="user-container" class="card">
+			<div class="item">
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			const buttonRefresh = document.getElementById("btnRefresh");
+			buttonRefresh.addEventListener("click", () => {
+				fetchUser();
+			});
+		});
+
+		function fetchUser() {
+			const usersContainer = document.getElementById("user-container");
+			usersContainer.innerHTML = `<p>Loading...</p>`;
+
+			fetch("https://randomuser.me/api?results=5")
+				.then(response => {
+					if (!response.ok) {
+						throw new Error("Network response not OK" + response.statusText)
+					}
+					return response.json()
+				})
+				.then(data => {
+					console.log(data);
+					usersContainer.innerHTML = "";
+
+					data.results.forEach(user => {
+						const userDiv = document.createElement("div");
+						userDiv.classList.add("item");
+						userDiv.innerHTML = `
+                <h2>${user.name.first}</h2>
+                <p>${user.email}</p>
+                <img src="${user.picture.medium}" alt="img">
+                `;
+
+						usersContainer.appendChild(userDiv);
+					});
+				})
+				.catch(error => {
+					console.error("Not get API", error);
+				});
+		}
+
+		fetchUser();
+
+	</script>
+</body>
+
+</html>
